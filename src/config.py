@@ -3,7 +3,7 @@ from os import getenv
 
 class Config:
     """
-    class to hold and mange app settings and external configuration
+    class to hold and manage app settings and external configuration
     """
 
     FILE_URL = getenv(

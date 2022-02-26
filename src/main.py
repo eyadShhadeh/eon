@@ -1,3 +1,4 @@
+import logging as log
 import math
 from pathlib import Path
 
@@ -6,7 +7,7 @@ from matplotlib import pyplot
 from mpl_toolkits import mplot3d
 from stl import mesh
 
-from util.config import Config
+from config import Config
 
 
 def _get_asset(asset_url=Config.FILE_URL) -> None:
@@ -22,31 +23,36 @@ def _get_asset(asset_url=Config.FILE_URL) -> None:
         file.write(data.content)
 
 
-def execute():
+def execute() -> None:
     """
     Script to rotate the targeted
     """
-    _get_asset()
+    try:
 
-    figure = pyplot.figure()
-    axes = mplot3d.Axes3D(figure)
+        _get_asset()
 
-    # Load the STL files
-    target_mesh = mesh.Mesh.from_file("assets/raw_039.stl")
+        figure = pyplot.figure()
+        axes = mplot3d.Axes3D(figure)
 
-    # rotate
-    target_mesh.rotate([0, 1, 0], math.radians(180))
-    Path("output/").mkdir(parents=True, exist_ok=True)
-    mesh.Mesh.save(target_mesh, filename="output/raw_039_rotated.stl")
+        # Load the STL files
+        target_mesh = mesh.Mesh.from_file("assets/raw_039.stl")
 
-    # add the vectors to the plot
-    axes.add_collection3d(mplot3d.art3d.Poly3DCollection(target_mesh.vectors))
+        # rotate
+        target_mesh.rotate([0, 1, 0], math.radians(180))
+        Path("output/").mkdir(parents=True, exist_ok=True)
+        mesh.Mesh.save(target_mesh, filename="output/raw_039_rotated.stl")
 
-    # Auto scale to the mesh size
-    scale = target_mesh.points.flatten()
-    axes.auto_scale_xyz(scale, scale, scale)
+        # add the vectors to the plot
+        axes.add_collection3d(mplot3d.art3d.Poly3DCollection(target_mesh.vectors))
 
-    pyplot.show()
+        # Auto scale to the mesh size
+        scale = target_mesh.points.flatten()
+        axes.auto_scale_xyz(scale, scale, scale)
+
+        # uncomment the below line to and run it to see the result
+        # pyplot.show()
+    except Exception as exc:
+        log.error("Failed to get the required asset - ex: " + exc)
 
 
 if __name__ == "__main__":
